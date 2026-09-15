@@ -1,0 +1,222 @@
+/* Max Leimkühler Consulting */
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('../fonts/Outfit-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../fonts/JetBrainsMono-latin.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-top: #241553;
+  --bg-bottom: #100826;
+  --glow: rgba(126, 74, 230, 0.32);
+  --ink: #f3eefb;
+  --ink-soft: rgba(243, 238, 251, 0.64);
+  --ink-faint: rgba(243, 238, 251, 0.22);
+  --accent: #ee3d86;
+  --pad: clamp(20px, 3.6vw, 56px);
+  --sans: 'Outfit', 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html { margin: 0; background: var(--bg-bottom); }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(70% 55% at 18% -5%, var(--glow), transparent 70%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 2rem;
+  padding: var(--pad);
+}
+
+/* Layers: canvas behind everything, content above it. */
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.brand, .contact, .intro, .legal, .games, .page { position: relative; z-index: 1; }
+
+/* A text block steps back while the player's snake runs behind it. */
+.brand, .contact, .intro, .legal { transition: opacity 0.35s; }
+.is-dimmed { opacity: 0.35; }
+
+/* Small tracked labels (wordmark role, kicker, footer). */
+.label {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Top left */
+.brand {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: inherit;
+  text-decoration: none;
+}
+.brand-name {
+  font-weight: 500;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.brand-role { color: var(--accent); }
+
+/* Top right */
+.contact {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+.icon-link {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--ink-faint);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: border-color 0.2s, color 0.2s;
+}
+.icon-link svg { width: 15px; height: 15px; display: block; }
+.icon-link:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Bottom left */
+.intro {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: end;
+  max-width: 66rem;
+}
+.kicker { margin: 0 0 1.1rem; color: var(--accent); }
+h1 {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(1.9rem, 3.4vw + 0.4rem, 3.9rem);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 1.4rem 0 0;
+  max-width: 46ch;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 0.9rem + 0.3vw, 1.15rem);
+  line-height: 1.55;
+}
+
+/* Bottom left, under the intro */
+.legal {
+  grid-column: 1;
+  grid-row: 4;
+  align-self: end;
+  justify-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+  margin-top: -0.75rem;
+  color: var(--ink-soft);
+}
+.legal a { color: inherit; text-decoration: none; }
+.legal a:hover { color: var(--accent); }
+
+/* Bottom right: which game runs in the background */
+.games {
+  grid-column: 2;
+  grid-row: 3 / 5;
+  align-self: end;
+  justify-self: end;
+  display: flex;
+  gap: 1.4rem;
+}
+.game-tab {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  padding: 0.2rem 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.game-tab:hover { color: var(--ink); }
+.game-tab.is-active { color: var(--accent); }
+
+/* Legal notice page */
+.page {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  max-width: 62ch;
+  padding-block: 1.5rem 3rem;
+}
+.page h1 {
+  font-size: clamp(2rem, 2.6vw + 1rem, 3.2rem);
+  margin: 0 0 0.4rem;
+}
+.page h2 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 2.4rem 0 0.6rem;
+}
+.page p, .page address { margin: 0 0 0.9rem; color: var(--ink-soft); }
+.page address { font-style: normal; }
+.page a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-faint);
+  text-underline-offset: 0.2em;
+}
+.page a:hover { color: var(--accent); text-decoration-color: currentColor; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.icon-link:focus-visible { border-radius: 50%; }
+
+@media (max-width: 720px) {
+  body { gap: 1.5rem; }
+  .intro { grid-column: 1 / -1; grid-row: 3; }
+  .legal { grid-column: 1 / -1; grid-row: 4; margin-top: -0.5rem; }
+  .games { display: none; } /* phones get Snake only */
+}
