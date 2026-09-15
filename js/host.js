@@ -150,15 +150,19 @@
     if (active && active.keyup) active.keyup(e);
   });
 
+  // A one-finger swipe steers the game, so the browser must not scroll or bounce
+  // the page on it (touchmove is registered non-passive for that). Two fingers
+  // stay with the browser so pinch zoom keeps working.
   function touchHandler(type) {
     return function (e) {
       if (!active || !active.touch || onControl(e.target)) return;
+      if (type === 'move' && e.cancelable && !(e.touches && e.touches.length > 1)) e.preventDefault();
       var t = e.changedTouches[0];
       active.touch(type, t.clientX, t.clientY);
     };
   }
   document.addEventListener('touchstart', touchHandler('start'), { passive: true });
-  document.addEventListener('touchmove', touchHandler('move'), { passive: true });
+  document.addEventListener('touchmove', touchHandler('move'), { passive: false });
   document.addEventListener('touchend', touchHandler('end'), { passive: true });
 
   // ---- lifecycle ----------------------------------------------------------

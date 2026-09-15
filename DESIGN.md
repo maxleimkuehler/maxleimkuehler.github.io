@@ -63,6 +63,9 @@ Logik in js/runner-core.js.
   sonst Schwanz verfolgen, sonst irgendein sicherer Zug. Tod: ausblenden, neu starten.
 - Übernahme: Pfeiltasten/WASD (Handy: Wischen). Schlange wird heller, kein
   Score, kein Hinweis. Nach Tod ausblenden, zurück in Autopilot.
+- Wischen darf die Seite nicht scrollen oder federn lassen: touch-action auf
+  body.page-play, dazu preventDefault auf touchmove im Host (ein Finger; zwei
+  Finger bleiben beim Browser für Pinch-Zoom).
 - prefers-reduced-motion: stehende Windung, keine Animation.
   Tab im Hintergrund: Pause.
 - Autopilot ca. 7 Zellen/s, Spieler ca. 9 Zellen/s.

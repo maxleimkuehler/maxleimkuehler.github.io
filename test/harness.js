@@ -42,6 +42,7 @@ function makeEnv(opts) {
   opts = opts || {};
   let now = 0;
   const listeners = {};
+  const listenerOpts = {};   // options each document/window listener was registered with, per type
   const rafQueue = [];
   const timers = [];
   const ctxCalls = [];
@@ -65,7 +66,10 @@ function makeEnv(opts) {
     fonts: { ready: Promise.resolve() },
     getElementById: id => (id === 'stage' ? canvas : null),
     querySelectorAll: sel => (sel === '[data-obstacle]' ? obstacles : sel === '[data-game]' ? tabs : []),
-    addEventListener: (type, fn) => { (listeners[type] = listeners[type] || []).push(fn); }
+    addEventListener: (type, fn, opts) => {
+      (listeners[type] = listeners[type] || []).push(fn);
+      (listenerOpts[type] = listenerOpts[type] || []).push(opts);
+    }
   };
   const window = {
     innerWidth: opts.width || 1200,
@@ -93,7 +97,7 @@ function makeEnv(opts) {
     );
   });
   const env = {
-    window, document, brand, band, tabs, ctxCalls,
+    window, document, brand, band, tabs, ctxCalls, listenerOpts,
     core: window.SnakeCore,
     host: window.GameHost,
     tab: name => tabs.find(t => t.getAttribute('data-game') === name),

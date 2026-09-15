@@ -52,6 +52,10 @@ body {
   padding: var(--pad);
 }
 
+/* Swipes on the play page steer the game; the browser must not pan the page on them.
+   Pinch zoom stays allowed where the keyword is known, otherwise everything is off. */
+.page-play { touch-action: none; touch-action: pinch-zoom; }
+
 /* Layers: canvas behind everything, content above it. */
 #stage {
   position: fixed;

@@ -16,6 +16,16 @@ function dummyGame(log) {
   };
 }
 
+// A one-finger touch event as the browser would deliver it.
+function swipe(props) {
+  const ev = Object.assign({
+    target: null, cancelable: true, touches: [{}],
+    changedTouches: [{ clientX: 300, clientY: 300 }],
+    defaultPrevented: false, preventDefault() { ev.defaultPrevented = true; }
+  }, props);
+  return ev;
+}
+
 test('the play band sits between the top and bottom text blocks', () => {
   const env = makeEnv();
   const b = env.debug().band;
@@ -84,4 +94,31 @@ test('when the switcher is hidden (narrow screens) the host falls back to the fi
   env.fire('resize');
   env.advance(1200);
   assert.equal(env.debug().game, 'snake');
+});
+
+test('a swipe on the play area is kept from scrolling the page', () => {
+  const env = makeEnv();
+  env.fire('touchstart', swipe());
+  const move = swipe({ changedTouches: [{ clientX: 300, clientY: 360 }] });
+  env.fire('touchmove', move);
+  assert.equal(move.defaultPrevented, true);
+  const opts = env.listenerOpts.touchmove;
+  assert.ok(opts.length && opts.every(o => o && o.passive === false), 'a passive touchmove listener cannot cancel the scroll');
+});
+
+test('swipes on controls, with two fingers, or without a touch-aware game are left to the browser', () => {
+  const env = makeEnv({ autostart: false });
+  env.host.register('pong', dummyGame([]));
+  env.start();
+  const onLink = swipe({ target: { closest: () => ({}) } });
+  env.fire('touchmove', onLink);
+  assert.equal(onLink.defaultPrevented, false, 'a link or button keeps its own gesture');
+  const pinch = swipe({ touches: [{}, {}] });
+  env.fire('touchmove', pinch);
+  assert.equal(pinch.defaultPrevented, false, 'pinch zoom stays possible');
+  env.tab('pong').click();
+  env.advance(900);
+  const noTouch = swipe();
+  env.fire('touchmove', noTouch);
+  assert.equal(noTouch.defaultPrevented, false, 'a game without touch input does not block');
 });
